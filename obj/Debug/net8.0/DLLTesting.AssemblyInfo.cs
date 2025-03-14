@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad919dc5e2cb02704d5e53c4f55d87b819d34ffe")]
 [assembly: System.Reflection.AssemblyProductAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

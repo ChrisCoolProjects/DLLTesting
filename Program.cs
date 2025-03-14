@@ -21,7 +21,7 @@ var startggclient = new StartGGLibrary(myClient, myOptions, null);
 
 string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result;
 
-Console.WriteLine(myEventName);
+//Console.WriteLine(myEventName);
 
 /*
  * EVERYTHING ABOVE THIS LINE WORKS PERFECTLY
@@ -34,7 +34,7 @@ TournamentQuery myQuery = new TournamentQuery();
 myQuery.PerPage = 4;
 myQuery.Page = 1;
 myQuery.Filter = new TournamentPageFilter();
-myQuery.Filter.Name("Quickdraw Brawl");
+myQuery.Filter.Name("Quickdraw");
 
 /*
 var QDBNames = await startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync();
@@ -49,28 +49,30 @@ I haven't really dug in and analyzed this commented code at all (lack of time) b
 */
 try
 {
-    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
-    GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
-    Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
-    TournamentConnection partFour = partThree.Result; //This is where the exception happens
-    List<Tournament> partFive = partFour.Nodes;
-    IEnumerable<string> partSix = partFive.Select(n => n.Name);
-    foreach (var name in partSix)
-    {
-        Console.WriteLine(name);
-    }
-/*  The above translates to the following:
-    var testQuery = startggclient.Query.Tournaments(myQuery).Select().ExecuteAsync().Result.Nodes.Select(n => n.Name);
+    /*    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
+        GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
+        Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
+        TournamentConnection partFour = partThree.Result; //This is where the exception happens
+        List<Tournament> partFive = partFour.Nodes;
+        IEnumerable<string> partSix = partFive.Select(n => n.Name);
+        foreach (var name in partSix)
+        {
+            Console.WriteLine(name);
+        }
+    /*  The above translates to the following:
+        var testQuery = startggclient.Query.Tournaments(myQuery).Select().ExecuteAsync().Result.Nodes.Select(n => n.Name);
 
-    If I take this and try to format it to match the QDBNames query I get:
-    var testQuery = startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync(cancellationToken).Result;
+        If I take this and try to format it to match the QDBNames query I get:
+    */
+    //    var testQuery = startggclient.Query.Tournaments(myQuery).Include(e=>e.Nodes.Select(n=>n.Name)).Select(e=>e.).ExecuteAsync().Result;
+    var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes.Select(e => e.Name)).ExecuteAsync().Result; //THIS WORKS!!!
+    //Console.WriteLine(testQuery);
     foreach (var q in testQuery)
     {
         Console.WriteLine(q);
     }
-idk ill look at it more later
-*/
-    }
+
+}
 catch(Exception ex)
 {
     Console.WriteLine($"Error: {ex.Message}");
