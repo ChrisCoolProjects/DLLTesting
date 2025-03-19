@@ -19,20 +19,21 @@ myClient.BaseAddress = new Uri("https://api.start.gg/gql/alpha");
 IOptions<GraphClientOptions> myOptions = Options.Create<GraphClientOptions>(new GraphClientOptions());
 var startggclient = new StartGGLibrary(myClient, myOptions, null);
 
-string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result;
-
-//Console.WriteLine(myEventName);
 
 /*
+ * string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result
+ * //Console.WriteLine(myEventName);
  * EVERYTHING ABOVE THIS LINE WORKS PERFECTLY
  */
 
 
 CancellationToken cancellationToken = CancellationToken.None;
 
+// Get the first 5 tournaments that have "Genesis" in the name.
 TournamentQuery myQuery = new TournamentQuery();
-myQuery.PerPage = 4;
+myQuery.PerPage = 5;
 myQuery.Page = 1;
+<<<<<<< Updated upstream
 myQuery.Filter = new TournamentPageFilter();
 myQuery.Filter.Name("Quickdraw");
 
@@ -42,13 +43,20 @@ foreach (var q in QDBNames)
 {
     Console.WriteLine(q);
 }
+=======
+myQuery.Filter = new TournamentPageFilter(); ;
+myQuery.Filter.Name("Genesis");
 
-Okay honestly not entirely sure what this section is.
-I saw an example query in the documentation that formatted the query like this and I figured it'd be a good reference to go off of.
-I haven't really dug in and analyzed this commented code at all (lack of time) but it may make more sense as a formatted query than what I've broken up below.
-*/
+// Get the 4 highest placers for each event in the tournament
+StandingPaginationQuery myStandingQuery = new StandingPaginationQuery();
+myStandingQuery.Page = 1;
+myStandingQuery.PerPage = 4;
+>>>>>>> Stashed changes
+
+//getting information from the API and storing it in a DTO(?) to use for my own purposes later
 try
 {
+<<<<<<< Updated upstream
     /*    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
         GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
         Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
@@ -70,6 +78,30 @@ try
     foreach (var q in testQuery)
     {
         Console.WriteLine(q);
+=======
+    var testQuery = startggclient.Query.Tournaments(myQuery).
+    Select(tourneyConn => tourneyConn.Nodes.
+    Select(tournament => tournament.Events.
+    Select(myEvent =>
+    new InfoStorage
+    {
+        numAttendees = myEvent.NumEntrants,
+        slug = myEvent.Slug,
+       // topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
+    })))
+    .ExecuteAsync().Result;
+    foreach (var item in testQuery)
+    {
+        foreach(var e in item)
+        {
+            Console.WriteLine(e.slug);          //works fine
+            Console.WriteLine(e.numAttendees);  //works fine
+            //foreach(var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
+            //{
+            //    Console.WriteLine(f);
+            //}
+        }
+>>>>>>> Stashed changes
     }
 
 }
@@ -77,4 +109,48 @@ catch(Exception ex)
 {
     Console.WriteLine($"Error: {ex.Message}");
     Console.WriteLine(ex.StackTrace);
+<<<<<<< Updated upstream
 }
+=======
+}
+public class InfoStorage
+{
+    public int? numAttendees;
+    public string? slug;
+    public IEnumerable<string?>? topPlacers = new List<string>();
+}
+
+/*
+ * 
+ * The query I'm trying to replicate is as follows:
+query TournamentEventPlacements($name: String!, $perPageT: Int, $perPageS: Int, $page: Int) {
+  tournaments(query: {perPage: $perPageT, filter: {name: $name}}) {
+    nodes {
+      name
+      events {
+        name
+        numEntrants
+        standings(query: {perPage: $perPaggS, page: $page}) {
+          nodes {
+            placement
+            entrant {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+},{
+  "name": "Genesis",
+  "page": 1,
+  "perPageT": 5,
+  "perPageS": 4
+},{
+  "Authorization": "Bearer bf01876582bb578d64a02e1202b28f26"
+}
+ *
+ * using the L2GQL library to get information from multiple levels and/or get information while inserting multiple query statements like I have in this GQL query I'm trying to replicate has been a consistent problem. If you know what subjects or examples I need to understand to make this process smoother I'd greatly appreciate that (alongside direct help too honestly please I've been working around not properly understanding this for around a month at this point but ill appreciate any help I can get.)
+ */ 
+>>>>>>> Stashed changes
