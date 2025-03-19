@@ -33,17 +33,7 @@ CancellationToken cancellationToken = CancellationToken.None;
 TournamentQuery myQuery = new TournamentQuery();
 myQuery.PerPage = 5;
 myQuery.Page = 1;
-<<<<<<< Updated upstream
-myQuery.Filter = new TournamentPageFilter();
-myQuery.Filter.Name("Quickdraw");
 
-/*
-var QDBNames = await startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync();
-foreach (var q in QDBNames)
-{
-    Console.WriteLine(q);
-}
-=======
 myQuery.Filter = new TournamentPageFilter(); ;
 myQuery.Filter.Name("Genesis");
 
@@ -51,34 +41,11 @@ myQuery.Filter.Name("Genesis");
 StandingPaginationQuery myStandingQuery = new StandingPaginationQuery();
 myStandingQuery.Page = 1;
 myStandingQuery.PerPage = 4;
->>>>>>> Stashed changes
 
 //getting information from the API and storing it in a DTO(?) to use for my own purposes later
 try
 {
-<<<<<<< Updated upstream
-    /*    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
-        GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
-        Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
-        TournamentConnection partFour = partThree.Result; //This is where the exception happens
-        List<Tournament> partFive = partFour.Nodes;
-        IEnumerable<string> partSix = partFive.Select(n => n.Name);
-        foreach (var name in partSix)
-        {
-            Console.WriteLine(name);
-        }
-    /*  The above translates to the following:
-        var testQuery = startggclient.Query.Tournaments(myQuery).Select().ExecuteAsync().Result.Nodes.Select(n => n.Name);
 
-        If I take this and try to format it to match the QDBNames query I get:
-    */
-    //    var testQuery = startggclient.Query.Tournaments(myQuery).Include(e=>e.Nodes.Select(n=>n.Name)).Select(e=>e.).ExecuteAsync().Result;
-    var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes.Select(e => e.Name)).ExecuteAsync().Result; //THIS WORKS!!!
-    //Console.WriteLine(testQuery);
-    foreach (var q in testQuery)
-    {
-        Console.WriteLine(q);
-=======
     var testQuery = startggclient.Query.Tournaments(myQuery).
     Select(tourneyConn => tourneyConn.Nodes.
     Select(tournament => tournament.Events.
@@ -87,32 +54,29 @@ try
     {
         numAttendees = myEvent.NumEntrants,
         slug = myEvent.Slug,
-       // topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
+        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
     })))
     .ExecuteAsync().Result;
     foreach (var item in testQuery)
     {
-        foreach(var e in item)
+        foreach (var e in item)
         {
             Console.WriteLine(e.slug);          //works fine
             Console.WriteLine(e.numAttendees);  //works fine
-            //foreach(var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
-            //{
-            //    Console.WriteLine(f);
-            //}
+            foreach (var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
+            {
+                Console.WriteLine(f);
+            }
         }
->>>>>>> Stashed changes
     }
 
 }
-catch(Exception ex)
+catch (Exception ex)
 {
     Console.WriteLine($"Error: {ex.Message}");
     Console.WriteLine(ex.StackTrace);
-<<<<<<< Updated upstream
 }
-=======
-}
+
 public class InfoStorage
 {
     public int? numAttendees;
@@ -153,4 +117,3 @@ query TournamentEventPlacements($name: String!, $perPageT: Int, $perPageS: Int, 
  *
  * using the L2GQL library to get information from multiple levels and/or get information while inserting multiple query statements like I have in this GQL query I'm trying to replicate has been a consistent problem. If you know what subjects or examples I need to understand to make this process smoother I'd greatly appreciate that (alongside direct help too honestly please I've been working around not properly understanding this for around a month at this point but ill appreciate any help I can get.)
  */ 
->>>>>>> Stashed changes
