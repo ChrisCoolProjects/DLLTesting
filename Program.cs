@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -35,7 +36,7 @@ CancellationToken cancellationToken = CancellationToken.None;
 TournamentQuery myQuery = new TournamentQuery();
 myQuery.PerPage = 4;
 myQuery.Page = 1;
-myQuery.Filter = new TournamentPageFilter();;
+myQuery.Filter = new TournamentPageFilter(); ;
 myQuery.Filter.Name("Quickdraw");
 
 EventFilter myEventFilter = new EventFilter();
@@ -45,9 +46,6 @@ myEventFilter.VideogameId.Add("50203");
 StandingPaginationQuery myStandingQuery = new StandingPaginationQuery();
 myStandingQuery.Page = 1;
 myStandingQuery.PerPage = 4;
-
-
-
 /*
 var QDBNames = await startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync();
 foreach (var q in QDBNames)
@@ -83,43 +81,37 @@ try
     Console.WriteLine("Hello World");
 
 
-    /*    var testQuery = startggclient.Query.Tournaments(myQuery).Include(t => t.Nodes.Select(e =>
-        new EventInstance
+    var testQuery = startggclient.Query.Tournaments(myQuery).
+    Select(tourneyConn => tourneyConn.Nodes.
+    Select(tournament => tournament.Events.
+    Select(myEvent => //myEvent.Standings(myStandingQuery).Nodes.Select(myStanding =>
+    new InfoStorage
+    {
+        numAttendees = myEvent.NumEntrants,
+        slug = myEvent.Slug,
+        //topPlacers = (myEvent.Standings(myStandingQuery).Nodes.Select(a => a.Entrant.Name)),
+    })))//)
+    .ExecuteAsync().Result;
+    InfoStorage myInfo = new InfoStorage();
+    myInfo.prizePayout = myInfo.calcPayout(31);
+    myInfo.topPlacers = new List<string?> { "Evangeline", "autodidact", "Cadedac", "Akai", "JuneBug", "ULTxSuperior" };
+    myInfo.outputPayouts(myInfo.topPlacers, myInfo.prizePayout);
+    foreach(var i in testQuery)
+    {
+        foreach(var i2 in i)
         {
-            Name = e.Name,
-            //numAttendees = e.NumAttendees,
-            signupsOpen = e.IsRegistrationOpen,
-            //numAttendees = e.Events(null, myEventFilter).First<Event>().NumEntrants,
-            //TournamentID = e.Id.ToString(),
-            //standings 
-            eventList = e.Events(null, myEventFilter).ToList(),
-            TournamentID = e.Slug,
-        })).Select(e => e.Nodes.Select(e => e.Events.Select(e=>e.Name))).ExecuteAsync().Result;
-
-        foreach (var i in testQuery)
-        {
-            foreach (var j in i)
+                var podiumQuery = startggclient.Query.Event(null, i2.slug).
+                    Select(a => a.Standings(myStandingQuery)).ExecuteAsync().Result;
+                //i2.playerPlacement = podiumQuery;
+                i2.prizePayout = i2.calcPayout(i2.numAttendees);
+                Console.WriteLine(i2.numAttendees);
+            var placementInfo = podiumQuery.Nodes.Select(e => e.Entrant.Name);
+            i2.topPlacers = placementInfo;
+            foreach(var placement in placementInfo)
             {
-                Console.WriteLine(j.ToString());
+                Console.WriteLine(placement);
             }
-        }*/
-
-    //var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes).ExecuteAsync().Result;
-    var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes.Select(e => e.Events.Select(e=>e))).ExecuteAsync().Result;
-        //    MasterList.Tournaments = testQuery.ToList();
-        foreach (var myevent in MasterList.Events.Select(e=>e))
-    {
-        Console.WriteLine(myevent.Name);
-    }
-    foreach (var node in testQuery)
-    {
- //       MasterList.Events.AddRange(node.Events.Select(e => e).Where(e => e.Videogame.Id == "50203"));
-         Console.WriteLine(node);
-    }
-    foreach (var node in MasterList.Events)
-    {
-        Console.WriteLine(node.Name);
-        MasterList.StandingConnections.Add(node.Standings);
+        }
     }
 }
 catch (Exception ex)
@@ -127,9 +119,74 @@ catch (Exception ex)
     Console.WriteLine($"Error: {ex.Message}");
     Console.WriteLine(ex.StackTrace);
 }
-public static class MasterList
+public class TournamentDTO
 {
-    public static List<Tournament> Tournaments { get; set; } = new List<Tournament>();  
-    public static List<Event> Events { get; set; } = new List<Event>();
-    public static List<StandingConnection> StandingConnections { get; set; } = new List<StandingConnection>();
+    public string Name;
+    public string Id;
+    List<EventDTO> Nodes;
+
+}
+public class EventDTO
+{
+    public string? Id;
+    public string? Name
+    {
+        get {  return this.Name; }
+        set { this.Name = value; }
+    }
+    public int? numAttendees;
+    public bool? signupsOpen;
+
+}
+
+public class InfoStorage
+{
+    public string? Id;
+    public string? Name
+    {
+        get {  return this.Name; }
+        set { this.Name = value; }
+    }
+    public int? numAttendees;
+    public bool? signupsOpen;
+    public string? slug;
+    public string? playerName;
+    public int? playerPlacement;
+    public List<PodiumSpots>? Nodes;
+    public List<double?> prizePayout;
+    public IEnumerable<string?>? topPlacers = new List<string>();
+    //public List<string?>? topPlacers = new List<string>();
+    public List<double?> calcPayout(int? numAttendees)
+    {
+        double? prizePool = numAttendees >= 5 ? 50 : 0 ;
+        prizePool += (numAttendees * 5);
+        Console.WriteLine(prizePool);
+        List<double?> payouts = numAttendees switch
+        {
+            < 5           => new List<double?> { 0 },
+            >= 5 and < 20 => new List<double?> { .50, .30, .20 },                           // Top 3 Payout
+            >=20 and < 30 => new List<double?> { .50, .25, .15, .10 },                      // Top 4 Payout
+            >=30 and < 40 => new List<double?> { .45, .20, .15, .10, .05, .05 },            // Top 6 Payout
+            >=40          => new List<double?> { .42, .19, .14, .09, .05, .05, .03, .03 },  // Top 8 Payout
+        };
+        return payouts.Select(x => x * prizePool).ToList();
+    }
+    public void outputPayouts(IEnumerable<string> topPlacers, List<double?> prizePayout)
+    {
+        for (int i = 0; i < prizePayout.Count; i++)
+        {
+            Console.WriteLine($"{topPlacers.ElementAt(i)} won ${prizePayout.ElementAt(i)} in today's bracket.");
+        }
+    }
+}
+public class PodiumSpots
+{
+    public int? placing {  get; set; }
+    public Entrant? podiumEntrant {  get; set; }
+
+    public PodiumSpots(int? placing, Entrant? PodiumEntrant)
+    {
+        this.placing = placing;
+        this.podiumEntrant = podiumEntrant;
+    }
 }
