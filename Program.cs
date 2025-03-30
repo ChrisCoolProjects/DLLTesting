@@ -54,7 +54,11 @@ try
     {
         numAttendees = myEvent.NumEntrants,
         slug = myEvent.Slug,
-        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
+        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), /* When I try to output the values in IEnumerable<string> topPlacers on line 66, I get an error on this line.
+        // The error I'm getting is "Cannot query field "nodes" on type "Event".", even though my Nodes query occurs on a List<Standing> object. 
+        // There seems to be some sort of compiler restriction where because I'm creating this InfoStorage object on the event level, I can't run functions that wouldn't work on that level, but I'm not sure.
+        // If that's not the issue the only other thing I can think of is that topPlacers is null and I need to change the syntax of this query.
+        */
     })))
     .ExecuteAsync().Result;
     foreach (var item in testQuery)
