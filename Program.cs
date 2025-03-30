@@ -19,62 +19,105 @@ myClient.BaseAddress = new Uri("https://api.start.gg/gql/alpha");
 IOptions<GraphClientOptions> myOptions = Options.Create<GraphClientOptions>(new GraphClientOptions());
 var startggclient = new StartGGLibrary(myClient, myOptions, null);
 
-string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result;
-
-//Console.WriteLine(myEventName);
 
 /*
+ * string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result
+ * //Console.WriteLine(myEventName);
  * EVERYTHING ABOVE THIS LINE WORKS PERFECTLY
  */
 
 
 CancellationToken cancellationToken = CancellationToken.None;
 
+// Get the first 5 tournaments that have "Genesis" in the name.
 TournamentQuery myQuery = new TournamentQuery();
-myQuery.PerPage = 4;
+myQuery.PerPage = 5;
 myQuery.Page = 1;
-myQuery.Filter = new TournamentPageFilter();
-myQuery.Filter.Name("Quickdraw");
 
-/*
-var QDBNames = await startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync();
-foreach (var q in QDBNames)
-{
-    Console.WriteLine(q);
-}
+myQuery.Filter = new TournamentPageFilter(); ;
+myQuery.Filter.Name("Genesis");
 
-Okay honestly not entirely sure what this section is.
-I saw an example query in the documentation that formatted the query like this and I figured it'd be a good reference to go off of.
-I haven't really dug in and analyzed this commented code at all (lack of time) but it may make more sense as a formatted query than what I've broken up below.
-*/
+// Get the 4 highest placers for each event in the tournament
+StandingPaginationQuery myStandingQuery = new StandingPaginationQuery();
+myStandingQuery.Page = 1;
+myStandingQuery.PerPage = 4;
+
+//getting information from the API and storing it in a DTO(?) to use for my own purposes later
 try
 {
-    /*    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
-        GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
-        Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
-        TournamentConnection partFour = partThree.Result; //This is where the exception happens
-        List<Tournament> partFive = partFour.Nodes;
-        IEnumerable<string> partSix = partFive.Select(n => n.Name);
-        foreach (var name in partSix)
-        {
-            Console.WriteLine(name);
-        }
-    /*  The above translates to the following:
-        var testQuery = startggclient.Query.Tournaments(myQuery).Select().ExecuteAsync().Result.Nodes.Select(n => n.Name);
 
-        If I take this and try to format it to match the QDBNames query I get:
-    */
-    //    var testQuery = startggclient.Query.Tournaments(myQuery).Include(e=>e.Nodes.Select(n=>n.Name)).Select(e=>e.).ExecuteAsync().Result;
-    var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes.Select(e => e.Name)).ExecuteAsync().Result; //THIS WORKS!!!
-    //Console.WriteLine(testQuery);
-    foreach (var q in testQuery)
+    var testQuery = startggclient.Query.Tournaments(myQuery).
+    Select(tourneyConn => tourneyConn.Nodes.
+    Select(tournament => tournament.Events.
+    Select(myEvent =>
+    new InfoStorage
     {
-        Console.WriteLine(q);
+        numAttendees = myEvent.NumEntrants,
+        slug = myEvent.Slug,
+        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), /* When I try to output the values in IEnumerable<string> topPlacers on line 66, I get an error on this line.
+        // The error I'm getting is "Cannot query field "nodes" on type "Event".", even though my Nodes query occurs on a List<Standing> object. 
+        // There seems to be some sort of compiler restriction where because I'm creating this InfoStorage object on the event level, I can't run functions that wouldn't work on that level, but I'm not sure.
+        // If that's not the issue the only other thing I can think of is that topPlacers is null and I need to change the syntax of this query.
+        */
+    })))
+    .ExecuteAsync().Result;
+    foreach (var item in testQuery)
+    {
+        foreach (var e in item)
+        {
+            Console.WriteLine(e.slug);          //works fine
+            Console.WriteLine(e.numAttendees);  //works fine
+            foreach (var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
+            {
+                Console.WriteLine(f);
+            }
+        }
     }
 
 }
-catch(Exception ex)
+catch (Exception ex)
 {
     Console.WriteLine($"Error: {ex.Message}");
     Console.WriteLine(ex.StackTrace);
 }
+
+public class InfoStorage
+{
+    public int? numAttendees;
+    public string? slug;
+    public IEnumerable<string?>? topPlacers = new List<string>();
+}
+
+/*
+ * 
+ * The query I'm trying to replicate is as follows:
+query TournamentEventPlacements($name: String!, $perPageT: Int, $perPageS: Int, $page: Int) {
+  tournaments(query: {perPage: $perPageT, filter: {name: $name}}) {
+    nodes {
+      name
+      events {
+        name
+        numEntrants
+        standings(query: {perPage: $perPaggS, page: $page}) {
+          nodes {
+            placement
+            entrant {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+},{
+  "name": "Genesis",
+  "page": 1,
+  "perPageT": 5,
+  "perPageS": 4
+},{
+  "Authorization": "Bearer bf01876582bb578d64a02e1202b28f26"
+}
+ *
+ * using the L2GQL library to get information from multiple levels and/or get information while inserting multiple query statements like I have in this GQL query I'm trying to replicate has been a consistent problem. If you know what subjects or examples I need to understand to make this process smoother I'd greatly appreciate that (alongside direct help too honestly please I've been working around not properly understanding this for around a month at this point but ill appreciate any help I can get.)
+ */ 
