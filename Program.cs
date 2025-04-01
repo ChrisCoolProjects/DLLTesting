@@ -35,6 +35,10 @@ string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl
 CancellationToken cancellationToken = CancellationToken.None;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+// Get the first 5 tournaments that have "Quickdraw" in the name.
+>>>>>>> Stashed changes
 =======
 // Get the first 5 tournaments that have "Quickdraw" in the name.
 >>>>>>> Stashed changes
@@ -58,6 +62,7 @@ foreach (var q in QDBNames)
     Console.WriteLine(q);
 }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 Okay honestly not entirely sure what this section is.
 I saw an example query in the documentation that formatted the query like this and I figured it'd be a good reference to go off of.
@@ -92,6 +97,11 @@ try
 try
 {
 >>>>>>> Stashed changes
+=======
+//Getting information from the API and storing it in a DTO(?) to use for my own purposes later
+try
+{
+>>>>>>> Stashed changes
     var testQuery = startggclient.Query.Tournaments(myQuery).
     Select(tourneyConn => tourneyConn.Nodes.
     Select(tournament => tournament.Events.
@@ -100,6 +110,7 @@ try
     {
         numAttendees = myEvent.NumEntrants,
         slug = myEvent.Slug,
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         //topPlacers = (myEvent.Standings(myStandingQuery).Nodes.Select(a => a.Entrant.Name)),
     })))//)
@@ -110,6 +121,8 @@ try
     myInfo.outputPayouts(myInfo.topPlacers, myInfo.prizePayout);
     foreach(var i in testQuery)
 =======
+=======
+>>>>>>> Stashed changes
         name = myEvent.Name,
         topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
     })))
@@ -121,6 +134,7 @@ try
         foreach(var i2 in i)
         {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 var podiumQuery = startggclient.Query.Event(null, i2.slug).
                     Select(a => a.Standings(myStandingQuery)).ExecuteAsync().Result;
                 //i2.playerPlacement = podiumQuery;
@@ -131,6 +145,16 @@ try
             foreach(var placement in placementInfo)
             {
                 Console.WriteLine(placement);
+=======
+            Console.WriteLine(e.name);
+            Console.WriteLine(e.slug);           //works fine
+            Console.WriteLine($"There were {e.numAttendees} entrants at this event.");   //works fine
+            var payoutList = CalcPayout((int)e.numAttendees);
+            foreach (var payout in payoutList)
+            {
+
+                Console.WriteLine($"{IntToPodiumName(payoutList.IndexOf(payout)+1)} place won ${Math.Round((decimal)payout,2)}");
+>>>>>>> Stashed changes
 =======
             Console.WriteLine(e.name);
             Console.WriteLine(e.slug);           //works fine
