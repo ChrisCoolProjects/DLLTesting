@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< Updated upstream
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b26438edb3fb711f315c43330dc8939f78e0f1a")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd3039265abb983618446ada5308bf72221988a8")]
+>>>>>>> Stashed changes
 [assembly: System.Reflection.AssemblyProductAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DLLTesting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

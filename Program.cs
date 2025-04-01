@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using static DLLTesting.PayoutCalculator;
 using Linq2GraphQL.Client;
 using Microsoft.Extensions.Options;
 using StartGG;
@@ -33,6 +34,10 @@ string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl
 
 CancellationToken cancellationToken = CancellationToken.None;
 
+<<<<<<< Updated upstream
+=======
+// Get the first 5 tournaments that have "Quickdraw" in the name.
+>>>>>>> Stashed changes
 TournamentQuery myQuery = new TournamentQuery();
 myQuery.PerPage = 4;
 myQuery.Page = 1;
@@ -53,6 +58,7 @@ foreach (var q in QDBNames)
     Console.WriteLine(q);
 }
 
+<<<<<<< Updated upstream
 Okay honestly not entirely sure what this section is.
 I saw an example query in the documentation that formatted the query like this and I figured it'd be a good reference to go off of.
 I haven't really dug in and analyzed this commented code at all (lack of time) but it may make more sense as a formatted query than what I've broken up below.
@@ -81,6 +87,11 @@ try
     Console.WriteLine("Hello World");
 
 
+=======
+//Getting information from the API and storing it in a DTO(?) to use for my own purposes later
+try
+{
+>>>>>>> Stashed changes
     var testQuery = startggclient.Query.Tournaments(myQuery).
     Select(tourneyConn => tourneyConn.Nodes.
     Select(tournament => tournament.Events.
@@ -89,6 +100,7 @@ try
     {
         numAttendees = myEvent.NumEntrants,
         slug = myEvent.Slug,
+<<<<<<< Updated upstream
         //topPlacers = (myEvent.Standings(myStandingQuery).Nodes.Select(a => a.Entrant.Name)),
     })))//)
     .ExecuteAsync().Result;
@@ -97,9 +109,18 @@ try
     myInfo.topPlacers = new List<string?> { "Evangeline", "autodidact", "Cadedac", "Akai", "JuneBug", "ULTxSuperior" };
     myInfo.outputPayouts(myInfo.topPlacers, myInfo.prizePayout);
     foreach(var i in testQuery)
+=======
+        name = myEvent.Name,
+        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), //error occurs here
+    })))
+    .ExecuteAsync().Result;
+
+    foreach (var item in testQuery)
+>>>>>>> Stashed changes
     {
         foreach(var i2 in i)
         {
+<<<<<<< Updated upstream
                 var podiumQuery = startggclient.Query.Event(null, i2.slug).
                     Select(a => a.Standings(myStandingQuery)).ExecuteAsync().Result;
                 //i2.playerPlacement = podiumQuery;
@@ -110,7 +131,22 @@ try
             foreach(var placement in placementInfo)
             {
                 Console.WriteLine(placement);
+=======
+            Console.WriteLine(e.name);
+            Console.WriteLine(e.slug);           //works fine
+            Console.WriteLine($"There were {e.numAttendees} entrants at this event.");   //works fine
+            var payoutList = CalcPayout((int)e.numAttendees);
+            foreach (var payout in payoutList)
+            {
+
+                Console.WriteLine($"{IntToPodiumName(payoutList.IndexOf(payout)+1)} place won ${Math.Round((decimal)payout,2)}");
+>>>>>>> Stashed changes
             }
+            //foreach (var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
+            //{
+            //    Console.WriteLine(f);
+            //}
+            Console.WriteLine();
         }
     }
 }
@@ -141,6 +177,7 @@ public class EventDTO
 
 public class InfoStorage
 {
+<<<<<<< Updated upstream
     public string? Id;
     public string? Name
     {
@@ -177,6 +214,34 @@ public class InfoStorage
         {
             Console.WriteLine($"{topPlacers.ElementAt(i)} won ${prizePayout.ElementAt(i)} in today's bracket.");
         }
+=======
+    public int? numAttendees;
+    public string? slug;
+    public IEnumerable<string?>? topPlacers = new List<string>();
+    public string name;
+}
+
+/*
+ * 
+ * The query I'm trying to replicate is as follows:
+query TournamentEventPlacements($name: String!, $perPageT: Int, $perPageS: Int, $page: Int) {
+  tournaments(query: {perPage: $perPageT, filter: {name: $name}}) {
+    nodes {
+      name
+      events {
+        name
+        numEntrants
+        standings(query: {perPage: $perPaggS, page: $page}) {
+          nodes {
+            placement
+            entrant {
+              id
+              name
+            }
+          }
+        }
+      }
+>>>>>>> Stashed changes
     }
 }
 public class PodiumSpots
