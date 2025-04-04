@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Linq2GraphQL.Client" Version="0.13.67-prerelease" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0-preview.1.25080.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

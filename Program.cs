@@ -1,80 +1,141 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using Linq2GraphQL.Client;
-using Microsoft.Extensions.Options;
-using StartGG;
-using StartGG.Client;
-using StartGG.Inputs;
-using StartGG.Types;
+﻿using System.Text;
+using Newtonsoft.Json;
+using static DLLTesting.PayoutCalculator;
 
-
-// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
-string myKey = File.ReadLines("../../../lib/KeyFile.txt").First();
-var myClient = new HttpClient();
-myClient.DefaultRequestHeaders.Add("Authorization", myKey);
-myClient.BaseAddress = new Uri("https://api.start.gg/gql/alpha");
-
-IOptions<GraphClientOptions> myOptions = Options.Create<GraphClientOptions>(new GraphClientOptions());
-var startggclient = new StartGGLibrary(myClient, myOptions, null);
-
-string myEventName = startggclient.Query.Event(null, "tournament/quickdraw-brawl-26/event/bbcf-double-elimination").Select(e => e.Name).ExecuteAsync().Result;
-
-//Console.WriteLine(myEventName);
-
-/*
- * EVERYTHING ABOVE THIS LINE WORKS PERFECTLY
- */
-
-
-CancellationToken cancellationToken = CancellationToken.None;
-
-TournamentQuery myQuery = new TournamentQuery();
-myQuery.PerPage = 4;
-myQuery.Page = 1;
-myQuery.Filter = new TournamentPageFilter();
-myQuery.Filter.Name("Quickdraw");
-
-/*
-var QDBNames = await startggclient.Query.Tournaments(myQuery).Include(e => e.Nodes.Select(n => n.Name)).Select(e => e.Nodes).ExecuteAsync();
-foreach (var q in QDBNames)
+class Program
 {
-    Console.WriteLine(q);
-}
-
-Okay honestly not entirely sure what this section is.
-I saw an example query in the documentation that formatted the query like this and I figured it'd be a good reference to go off of.
-I haven't really dug in and analyzed this commented code at all (lack of time) but it may make more sense as a formatted query than what I've broken up below.
-*/
-try
-{
-    /*    GraphQuery<TournamentConnection> partOne = startggclient.Query.Tournaments(myQuery);
-        GraphQueryExecute<TournamentConnection, TournamentConnection> partTwo = partOne.Select();
-        Task<TournamentConnection> partThree = partTwo.ExecuteAsync(cancellationToken);
-        TournamentConnection partFour = partThree.Result; //This is where the exception happens
-        List<Tournament> partFive = partFour.Nodes;
-        IEnumerable<string> partSix = partFive.Select(n => n.Name);
-        foreach (var name in partSix)
-        {
-            Console.WriteLine(name);
-        }
-    /*  The above translates to the following:
-        var testQuery = startggclient.Query.Tournaments(myQuery).Select().ExecuteAsync().Result.Nodes.Select(n => n.Name);
-
-        If I take this and try to format it to match the QDBNames query I get:
-    */
-    //    var testQuery = startggclient.Query.Tournaments(myQuery).Include(e=>e.Nodes.Select(n=>n.Name)).Select(e=>e.).ExecuteAsync().Result;
-    var testQuery = startggclient.Query.Tournaments(myQuery).Select(e => e.Nodes.Select(e => e.Name)).ExecuteAsync().Result; //THIS WORKS!!!
-    //Console.WriteLine(testQuery);
-    foreach (var q in testQuery)
+    static async Task Main()
     {
-        Console.WriteLine(q);
-    }
+        string query = @"
+        query TournamentEventPlacements($name: String!, $perPageT: Int, $perPageS: Int, $page: Int) {
+          tournaments(query: {perPage: $perPageT, filter: {name: $name}}) {
+            nodes {
+              name
+              events {
+                name
+                numEntrants
+                standings(query: {perPage: $perPageS, page: $page}) {
+                  nodes {
+                    placement
+                    player {
+                      id
+                      gamerTag
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }";
 
+        var variables = new
+        {
+            name = "Quickdraw",
+            perPageS = 8,
+            perPageT = 5,
+            page = 1
+        };
+
+        var requestBody = new
+        {
+            query,
+            variables
+        };
+
+        string jsonRequestBody = JsonConvert.SerializeObject(requestBody);
+
+        var myClient = new HttpClient();
+        string myKey = File.ReadLines("../../../lib/KeyFile.txt").First();
+        myClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        myClient.DefaultRequestHeaders.Add("Authorization", myKey);
+
+        var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await myClient.PostAsync("https://api.start.gg/gql/alpha", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string responseContent = await response.Content.ReadAsStringAsync();
+            TournamentResponse tournamentResponse = JsonConvert.DeserializeObject<TournamentResponse>(responseContent);
+            if (tournamentResponse?.Data?.Tournaments != null)
+            {
+                foreach (var tournament in tournamentResponse.Data.Tournaments.Nodes)
+                {
+                    Console.WriteLine($"Tournament Name: {tournament.Name}");
+                    foreach (var eventItem in tournament.Events)
+                    {
+                        if (eventItem.Name == "QDB Dinner Headcount") continue;
+                        Console.WriteLine($"  Event Name: {eventItem.Name}");
+                        Console.WriteLine($"  Number of Entrants: {eventItem.NumEntrants}");
+                        var payoutList = CalcPayout(eventItem.NumEntrants);
+                        Console.WriteLine($"  Total prize pool: ${payoutList.Sum()}");
+                        foreach (var standingItem in eventItem.Standings.Nodes)
+                        {
+                            if (standingItem.Placement <= payoutList.Count())
+                            {
+                                Console.WriteLine($"   {IntToPodiumName(standingItem.Placement)} place: {standingItem.Player.gamerTag} won ${payoutList.ElementAt(standingItem.Placement - 1)} ");
+                            }
+                        }
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine();
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Error: " + response.ReasonPhrase);
+            string errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Response Content: {errorContent}");
+        }
+    }
 }
-catch(Exception ex)
+
+public class Event
 {
-    Console.WriteLine($"Error: {ex.Message}");
-    Console.WriteLine(ex.StackTrace);
+    public string Name { get; set; }
+    public int NumEntrants { get; set; }
+    public StandingConnection Standings { get; set; }
 }
+
+public class Tournament
+{
+    public string Name { get; set; }
+    public List<Event> Events { get; set; }
+}
+
+public class TournamentResponse
+{
+    public TournamentData Data { get; set; }
+}
+
+public class TournamentData
+{
+    public TournamentConnection Tournaments { get; set; }
+}
+
+public class TournamentConnection
+{
+    public List<Tournament> Nodes { get; set; }
+}
+public class Standing
+{
+    public int Placement { get; set; }
+    public Entrant Entrant { get; set; }
+    public Player Player { get; set; }
+}
+public class StandingConnection
+{
+    public List<Standing> Nodes { get; set; }
+}
+public class Entrant
+{
+    public string Name { get; set; }
+    public int Id { get; set; }
+}
+public class Player
+{
+    public string gamerTag { get; set; }
+    public int Id { get; set; }
+}
+

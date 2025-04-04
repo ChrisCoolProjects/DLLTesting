@@ -67,3 +67,4 @@ C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\refint\DLLTesti
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\DLLTesting.pdb
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\DLLTesting.genruntimeconfig.cache
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\ref\DLLTesting.dll
+C:\Users\csoremekun\Documents\GitHub\DLLTesting\bin\Debug\net8.0\Newtonsoft.Json.dll

@@ -5,6 +5,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{4FB2D95C-B25D-475B-997D-41439061A71B}|DLLTesting.csproj|c:\\users\\csoremekun\\documents\\github\\dlltesting\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4FB2D95C-B25D-475B-997D-41439061A71B}|DLLTesting.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4FB2D95C-B25D-475B-997D-41439061A71B}|DLLTesting.csproj|c:\\users\\csoremekun\\documents\\github\\dlltesting\\payoutcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4FB2D95C-B25D-475B-997D-41439061A71B}|DLLTesting.csproj|solutionrelative:payoutcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,17 +18,30 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PayoutCalculator.cs",
+              "DocumentMoniker": "C:\\Users\\csoremekun\\Documents\\GitHub\\DLLTesting\\PayoutCalculator.cs",
+              "RelativeDocumentMoniker": "PayoutCalculator.cs",
+              "ToolTip": "C:\\Users\\csoremekun\\Documents\\GitHub\\DLLTesting\\PayoutCalculator.cs",
+              "RelativeToolTip": "PayoutCalculator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-04T20:38:01.369Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\csoremekun\\Documents\\GitHub\\DLLTesting\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\csoremekun\\Documents\\GitHub\\DLLTesting\\Program.cs*",
-              "RelativeToolTip": "Program.cs*",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAEMAAABWAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\csoremekun\\Documents\\GitHub\\DLLTesting\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAvwEcAAABOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-12T03:37:55.636Z",
               "EditorCaption": ""
