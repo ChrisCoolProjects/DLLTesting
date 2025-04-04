@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using StartGG;
-using Linq2GraphQL;
-
-namespace DLLTesting
+﻿namespace DLLTesting
 {
     internal static class PayoutCalculator
     {
         public static List<double?> CalcPayout(int numAttendees)
         {
-            double? prizePool = numAttendees >= 5 ? 50 : 0;
+            double? prizePool = numAttendees >= 11 ? 50 : 0;
             prizePool += (numAttendees * 5);
             List<double?> payouts = numAttendees switch
             {
