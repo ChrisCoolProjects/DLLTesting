@@ -54,23 +54,26 @@ try
     {
         numAttendees = myEvent.NumEntrants,
         slug = myEvent.Slug,
-        topPlacers = myEvent.Standings(myStandingQuery).Nodes.Select(e=> e.Entrant.Name), /* When I try to output the values in IEnumerable<string> topPlacers on line 66, I get an error on this line.
+        topPlacers = myEvent.Standings(myStandingQuery).Nodes
+
+        /* When I try to output the values in IEnumerable<string> topPlacers on line 66, I get an error on this line.
         // The error I'm getting is "Cannot query field "nodes" on type "Event".", even though my Nodes query occurs on a List<Standing> object. 
         // There seems to be some sort of compiler restriction where because I'm creating this InfoStorage object on the event level, I can't run functions that wouldn't work on that level, but I'm not sure.
         // If that's not the issue the only other thing I can think of is that topPlacers is null and I need to change the syntax of this query.
         */
     })))
     .ExecuteAsync().Result;
+    Console.WriteLine("HELLO AGAIN");
     foreach (var item in testQuery)
     {
         foreach (var e in item)
         {
             Console.WriteLine(e.slug);          //works fine
             Console.WriteLine(e.numAttendees);  //works fine
-            foreach (var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
+            /*foreach (var f in e.topPlacers)    //breaks because (i'm assuming) you're trying to iterate through a null IEnumberable? I'm not 100% sure if it's that or if it's poor syntax on the API call or both. I've tried quite a few variations and I'm not sure how to fix it.
             {
                 Console.WriteLine(f);
-            }
+            }*/
         }
     }
 
@@ -85,7 +88,7 @@ public class InfoStorage
 {
     public int? numAttendees;
     public string? slug;
-    public IEnumerable<string?>? topPlacers = new List<string>();
+    public List<Standing> topPlacers;
 }
 
 /*
