@@ -10,8 +10,7 @@
         "dependencies": {
           "Linq2GraphQL.Client": "0.13.67-prerelease",
           "Microsoft.Extensions.Options": "10.0.0-preview.1.25080.5",
-          "Newtonsoft.Json": "13.0.3",
-          "StartGG": "1.0.0.0"
+          "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
           "DLLTesting.dll": {}
@@ -217,15 +216,7 @@
           }
         }
       },
-      "System.Diagnostics.DiagnosticSource/8.0.0": {},
-      "StartGG/1.0.0.0": {
-        "runtime": {
-          "StartGG.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      }
+      "System.Diagnostics.DiagnosticSource/8.0.0": {}
     }
   },
   "libraries": {
@@ -359,11 +350,6 @@
       "sha512": "sha512-c9xLpVz6PL9lp/djOWtk5KPDZq3cSYpmXoJQY524EOtuFl5z9ZtsotpsyrDW40U1DRnQSYvcPKEUV0X//u6gkQ==",
       "path": "system.diagnostics.diagnosticsource/8.0.0",
       "hashPath": "system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512"
-    },
-    "StartGG/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
     }
   }
 }

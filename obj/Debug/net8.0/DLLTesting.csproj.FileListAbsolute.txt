@@ -19,7 +19,6 @@ C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\Microsoft.Extensions.Log
 C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
 C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll
 C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
-C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\StartGG.dll
 C:\Users\Chris\source\repos\DLLTesting\obj\Debug\net8.0\DLLTesting.csproj.AssemblyReference.cache
 C:\Users\Chris\source\repos\DLLTesting\obj\Debug\net8.0\DLLTesting.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Chris\source\repos\DLLTesting\obj\Debug\net8.0\DLLTesting.AssemblyInfoInputs.cache
@@ -68,3 +67,5 @@ C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\DLLTesting.pdb
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\DLLTesting.genruntimeconfig.cache
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\obj\Debug\net8.0\ref\DLLTesting.dll
 C:\Users\csoremekun\Documents\GitHub\DLLTesting\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\Chris\source\repos\DLLTesting\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\Chris\source\repos\DLLTesting\obj\Debug\net8.0\DLLTesting.sourcelink.json

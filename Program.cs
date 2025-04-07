@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
+using DLLTesting.StartGGLibrary;
 using static DLLTesting.PayoutCalculator;
 
 class Program
@@ -90,52 +91,3 @@ class Program
         }
     }
 }
-
-public class Event
-{
-    public string Name { get; set; }
-    public int NumEntrants { get; set; }
-    public StandingConnection Standings { get; set; }
-}
-
-public class Tournament
-{
-    public string Name { get; set; }
-    public List<Event> Events { get; set; }
-}
-
-public class TournamentResponse
-{
-    public TournamentData Data { get; set; }
-}
-
-public class TournamentData
-{
-    public TournamentConnection Tournaments { get; set; }
-}
-
-public class TournamentConnection
-{
-    public List<Tournament> Nodes { get; set; }
-}
-public class Standing
-{
-    public int Placement { get; set; }
-    public Entrant Entrant { get; set; }
-    public Player Player { get; set; }
-}
-public class StandingConnection
-{
-    public List<Standing> Nodes { get; set; }
-}
-public class Entrant
-{
-    public string Name { get; set; }
-    public int Id { get; set; }
-}
-public class Player
-{
-    public string gamerTag { get; set; }
-    public int Id { get; set; }
-}
-
